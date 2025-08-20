@@ -1,0 +1,51 @@
+CREATE TABLE perfiles (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE usuarios (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(100) NOT NULL,
+  correo_electronico VARCHAR(150) NOT NULL UNIQUE,
+  contrasena VARCHAR(255) NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE usuarios_perfiles (
+  usuario_id BIGINT NOT NULL,
+  perfil_id BIGINT NOT NULL,
+  PRIMARY KEY (usuario_id, perfil_id),
+  FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+  FOREIGN KEY (perfil_id) REFERENCES perfiles(id)
+);
+
+CREATE TABLE cursos (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(100) NOT NULL UNIQUE,
+  categoria VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE topicos (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  titulo VARCHAR(200) NOT NULL,
+  mensaje TEXT NOT NULL,
+  fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status ENUM('ABIERTO','RESUELTO','CERRADO','ARCHIVADO') NOT NULL DEFAULT 'ABIERTO',
+  autor_id BIGINT NOT NULL,
+  curso_id BIGINT NOT NULL,
+  UNIQUE KEY uq_topico_titulo_mensaje (titulo, mensaje),
+  FOREIGN KEY (autor_id) REFERENCES usuarios(id),
+  FOREIGN KEY (curso_id) REFERENCES cursos(id)
+);
+
+CREATE TABLE respuestas (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  mensaje TEXT NOT NULL,
+  topico_id BIGINT NOT NULL,
+  fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  autor_id BIGINT NOT NULL,
+  solucion BOOLEAN NOT NULL DEFAULT FALSE,
+  FOREIGN KEY (topico_id) REFERENCES topicos(id),
+  FOREIGN KEY (autor_id) REFERENCES usuarios(id)
+);
